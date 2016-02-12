@@ -45,7 +45,7 @@ class TodoList
   end
 
   def find_by_title(title)
-    @list.find { |item| item.title == title }
+    select { |item| item.title == title }.first
   end
 
   # ===----------------------=== #
@@ -60,8 +60,18 @@ class TodoList
     @list[index].undone!
   end
 
-  def all_done!
-    @list.each { |item| item.done! }
+  def done!
+    each { |item| item.done! }
+  end
+
+  alias_method :mark_all_done, :done!
+
+  def mark_all_undone
+    each { |item| item.undone! }
+  end
+
+  def mark_done(item_title)
+    find_by_title(item_title).done!
   end
 
   # ===----------------------=== #
@@ -81,7 +91,7 @@ class TodoList
   end
 
   # ===----------------------=== #
-  # Iterating over the list
+  # Iterating &
   # ===----------------------=== #
 
   def each
@@ -91,6 +101,25 @@ class TodoList
       yield(@list[iterator])
       iterator += 1
     end
+
+    self
+  end
+
+  def select
+    selection = TodoList.new(title)
+
+    each do |item|
+      selection << item if yield(item)
+    end
+    selection
+  end
+
+  def all_done
+    select { |item| item.done? }
+  end
+
+  def all_not_done
+    select { |item| !item.done? }
   end
 
   # ===----------------------=== #
@@ -99,6 +128,10 @@ class TodoList
 
   def to_s
     title.center(30, '-') + "\n\n" + @list.join("\n")
+  end
+
+  def to_a
+    @list
   end
 end
 
@@ -132,17 +165,4 @@ class Todo
   def to_s
     "[#{done? ? DONE_MARKER : UNDONE_MARKER}] #{title}"
   end
-end
-
-todo1 = Todo.new("Buy milk")
-todo2 = Todo.new("Clean room")
-todo3 = Todo.new("Go to gym")
-
-list = TodoList.new("Today's Todos")
-list.add(todo1)
-list.add(todo2)
-list.add(todo3)
-
-list.each do |todo|
-  puts todo                   # calls Todo#to_s
 end
