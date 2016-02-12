@@ -9,4 +9,4 @@ def my_each(array)
   arry
 end
 
-each([1, 2, 3, 4, 5]) { |num| puts num }
+my_each([1, 2, 3, 4, 5]) { |num| puts num }
