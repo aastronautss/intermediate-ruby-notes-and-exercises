@@ -45,6 +45,7 @@ class TodoList
   # ===----------------------=== #
 
   def item_at(index)
+    raise IndexError, "Invalid index" unless valid_index? index
     @list[index]
   end
 
@@ -57,10 +58,12 @@ class TodoList
   # ===----------------------=== #
 
   def mark_done_at(index)
+    raise IndexError, "Invalid index" unless valid_index? index
     @list[index].done!
   end
 
   def mark_undone_at(index)
+    raise IndexError, "Invalid index" unless valid_index? index
     @list[index].undone!
   end
 
@@ -91,6 +94,7 @@ class TodoList
   end
 
   def remove_at(index)
+    raise IndexError, "Invalid index" unless valid_index? index
     @list.delete_at index
   end
 
@@ -131,11 +135,17 @@ class TodoList
   # ===----------------------=== #
 
   def to_s
-    title.center(30, '-') + "\n\n" + @list.join("\n")
+    title.center(30, '-') + "\n" + @list.join("\n")
   end
 
   def to_a
     @list
+  end
+
+  private
+
+  def valid_index?(index)
+    (0...@list.length).include? index
   end
 end
 
